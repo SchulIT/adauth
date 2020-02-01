@@ -2,7 +2,6 @@
 
 namespace AdAuth\Response;
 
-
 use JMS\Serializer\Annotation as Serializer;
 
 class UserStatus {
