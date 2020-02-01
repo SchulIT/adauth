@@ -2,8 +2,6 @@
 
 namespace AdAuth;
 
-use AdAuth\Stream\StreamInterface;
-use JMS\Serializer\Serializer;
 use AdAuth\Request\AbstractRequest;
 use AdAuth\Request\AuthenticateRequest;
 use AdAuth\Request\PingRequest;
@@ -12,6 +10,8 @@ use AdAuth\Response\AbstractResponse;
 use AdAuth\Response\AuthenticationResponse;
 use AdAuth\Response\PingResponse;
 use AdAuth\Response\StatusResponse;
+use AdAuth\Stream\StreamInterface;
+use JMS\Serializer\SerializerInterface;
 
 class AdAuth implements AdAuthInterface {
     const DefaultPort = 55117;
@@ -22,7 +22,7 @@ class AdAuth implements AdAuthInterface {
     private $stream;
     private $serializer;
 
-    public function __construct($host, $port = self::DefaultPort, StreamInterface $stream, Serializer $serializer) {
+    public function __construct($host, StreamInterface $stream, SerializerInterface $serializer, $port = self::DefaultPort) {
         $this->host = $host;
         $this->port = $port;
 
@@ -40,13 +40,13 @@ class AdAuth implements AdAuthInterface {
 
     /**
      * @param Credentials $credentials
-     * @param bool $useSecondaryAccountInfo
      * @return AuthenticationResponse
      * @throws SocketReadException
      * @throws SocketWriteException
+     * @throws SocketConnectException
      */
-    public function authenticate(Credentials $credentials, $useSecondaryAccountInfo = false) {
-        return $this->request(new AuthenticateRequest($credentials->getUsername(), $credentials->getPassword(), $useSecondaryAccountInfo), AuthenticationResponse::class);
+    public function authenticate(Credentials $credentials): AbstractResponse {
+        return $this->request(new AuthenticateRequest($credentials->getUsername(), $credentials->getPassword()), AuthenticationResponse::class);
     }
 
     /**
@@ -54,8 +54,9 @@ class AdAuth implements AdAuthInterface {
      * @return StatusResponse
      * @throws SocketReadException
      * @throws SocketWriteException
+     * @throws SocketConnectException
      */
-    public function status(array $usernames) {
+    public function status(array $usernames): AbstractResponse {
         return $this->request(new StatusRequest($usernames), StatusResponse::class);
     }
 
@@ -63,8 +64,9 @@ class AdAuth implements AdAuthInterface {
      * @return PingResponse
      * @throws SocketReadException
      * @throws SocketWriteException
+     * @throws SocketConnectException
      */
-    public function ping() {
+    public function ping(): AbstractResponse {
         return $this->request(new PingRequest(), PingResponse::class);
     }
 
@@ -72,12 +74,13 @@ class AdAuth implements AdAuthInterface {
      * @param AbstractRequest $request
      * @param $resultType
      * @return AbstractResponse
-     * @throws SocketConnectException
      * @throws SocketReadException
      * @throws SocketWriteException
+     * @throws SocketConnectException
      */
     private function request(AbstractRequest $request, $resultType) {
-        $json = json_encode($request);
+        $json = $this->serializer
+            ->serialize($request, 'json');
 
         $stream = $this->stream->getStream($this->getHost(), $this->getPort());
 
@@ -98,7 +101,7 @@ class AdAuth implements AdAuthInterface {
             ->deserialize($response, $resultType, 'json');
 
         if($result === null) {
-            throw new SocketReadException(json_last_error_msg());
+            throw new SocketReadException();
         }
 
         return $result;
