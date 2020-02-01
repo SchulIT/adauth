@@ -1,6 +1,6 @@
 {
     "name": "schoolit/adauth",
-    "version": "1.0.0",
+    "version": "2.0.0",
     "type": "library",
     "description": "Client library for AD Auth Server",
     "license": "MIT",
@@ -11,7 +11,10 @@
         }
     ],
     "require": {
-        "jms/serializer": "^1.3"
+        "php": "^7.2",
+        "ext-openssl": "*",
+        "ext-json": "*",
+        "jms/serializer": "^3.0"
     },
     "autoload": {
         "psr-0": {
@@ -19,7 +22,7 @@
         }
     },
     "require-dev": {
-        "symfony/console": "^3.1"
+        "symfony/console": "^4.4"
     },
     "bin": [
         "bin/adauth.php"
