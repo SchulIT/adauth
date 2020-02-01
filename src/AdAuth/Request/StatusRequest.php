@@ -2,26 +2,31 @@
 
 namespace AdAuth\Request;
 
+use JMS\Serializer\Annotation as Serializer;
+
 class StatusRequest extends AbstractRequest {
+
+    /**
+     * @Serializer\SerializedName("usernames")
+     * @Serializer\Accessor(getter="getUsernames")
+     * @Serializer\ReadOnly()
+     * @var string[]
+     */
     private $usernames;
 
+    /**
+     * @param string[] $usernames
+     */
     public function __construct(array $usernames) {
         parent::__construct('status');
 
         $this->usernames = $usernames;
     }
 
-    public function getUsernames() {
-        return $this->usernames;
-    }
-
     /**
-     * @inheritDoc
+     * @return string[]
      */
-    public function jsonSerialize() {
-        return [
-            'action' => $this->getAction(),
-            'usernames' => $this->getUsernames()
-        ];
+    public function getUsernames(): array {
+        return $this->usernames;
     }
 }
