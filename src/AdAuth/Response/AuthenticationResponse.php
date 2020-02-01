@@ -5,6 +5,7 @@ namespace AdAuth\Response;
 use JMS\Serializer\Annotation as Serializer;
 
 class AuthenticationResponse extends AbstractResponse {
+
     /**
      * @Serializer\SerializedName("username")
      * @Serializer\Type("string")
@@ -30,13 +31,19 @@ class AuthenticationResponse extends AbstractResponse {
     private $fullname;
 
     /**
-     * @Serializer\SerializedName("employeeId")
+     * @Serializer\SerializedName("display_name")
      * @Serializer\Type("string")
      */
-    private $emplyeeId;
+    private $displayName;
 
     /**
-     * @Serializer\SerializedName("OU")
+     * @Serializer\SerializedName("unique_id")
+     * @Serializer\Type("string")
+     */
+    private $uniqueId;
+
+    /**
+     * @Serializer\SerializedName("ou")
      * @Serializer\Type("string")
      */
     private $ou;
@@ -50,49 +57,56 @@ class AuthenticationResponse extends AbstractResponse {
     /**
      * @return string
      */
-    public function getUsername() {
+    public function getUsername(): string {
         return $this->username;
     }
 
     /**
      * @return string
      */
-    public function getFirstname() {
+    public function getFirstname(): string {
         return $this->firstname;
     }
 
     /**
      * @return string
      */
-    public function getLastname() {
+    public function getLastname(): string {
         return $this->lastname;
     }
 
     /**
      * @return string
      */
-    public function getFullname() {
+    public function getFullname(): string {
         return $this->fullname;
     }
 
     /**
      * @return string
      */
-    public function getEmplyeeId() {
-        return $this->emplyeeId;
+    public function getDisplayName(): string {
+        return $this->displayName;
     }
 
     /**
      * @return string
      */
-    public function getOu() {
+    public function getUniqueId(): string {
+        return $this->uniqueId;
+    }
+
+    /**
+     * @return string
+     */
+    public function getOu(): string {
         return $this->ou;
     }
 
     /**
      * @return string[]
      */
-    public function getGroups() {
+    public function getGroups(): array {
         return $this->groups;
     }
 }
