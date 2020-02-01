@@ -4,6 +4,7 @@ namespace AdAuth\Command;
 
 use AdAuth\AdAuth;
 use AdAuth\Credentials;
+use AdAuth\SocketException;
 use AdAuth\Stream\TlsStream;
 use AdAuth\Stream\UnencryptedStream;
 use Symfony\Component\Console\Helper\QuestionHelper;
@@ -36,11 +37,15 @@ class PingRequestCommand extends BaseCommand {
         $stream = $useTls ? new TlsStream() : new UnencryptedStream();
 
         $serializer = $this->getSerializer();
-        $adAuth = new AdAuth($host, $port, $stream, $serializer);
+        $adAuth = new AdAuth($host, $stream, $serializer, $port);
 
-        $result = $adAuth->ping();
-        $json = $serializer->serialize($result, 'json', null);
+        try {
+            $result = $adAuth->ping();
+            $json = $serializer->serialize($result, 'json', null);
 
-        $output->writeln($json);
+            $output->writeln($json);
+        } catch (SocketException $exception) {
+            $this->getApplication()->renderThrowable($exception, $output);
+        }
     }
 }
