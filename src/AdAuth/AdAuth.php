@@ -5,9 +5,11 @@ namespace AdAuth;
 use AdAuth\Request\AbstractRequest;
 use AdAuth\Request\AuthenticateRequest;
 use AdAuth\Request\PingRequest;
+use AdAuth\Request\StatusRequest;
 use AdAuth\Response\AbstractResponse;
 use AdAuth\Response\AuthenticationResponse;
 use AdAuth\Response\PingResponse;
+use AdAuth\Response\StatusResponse;
 use AdAuth\Stream\StreamInterface;
 use JMS\Serializer\SerializerInterface;
 
@@ -55,6 +57,17 @@ class AdAuth implements AdAuthInterface {
      */
     public function ping(): AbstractResponse {
         return $this->request(new PingRequest(), PingResponse::class);
+    }
+
+    /**
+     * @param string[] $users List of usernames to request the status of
+     * @return StatusResponse
+     * @throws SocketConnectException
+     * @throws SocketReadException
+     * @throws SocketWriteException
+     */
+    public function status(array $users): AbstractResponse {
+        return $this->request(new StatusRequest($users), StatusResponse::class);
     }
 
     /**
