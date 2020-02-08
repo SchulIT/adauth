@@ -37,6 +37,12 @@ class AuthenticationResponse extends AbstractResponse {
     private $displayName;
 
     /**
+     * @Serializer\SerializedName("email")
+     * @Serializer\Type("string")
+     */
+    private $email;
+
+    /**
      * @Serializer\SerializedName("unique_id")
      * @Serializer\Type("string")
      */
@@ -90,9 +96,16 @@ class AuthenticationResponse extends AbstractResponse {
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getUniqueId(): string {
+    public function getEmail(): ?string {
+        return $this->email;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getUniqueId(): ?string {
         return $this->uniqueId;
     }
 

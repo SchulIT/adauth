@@ -21,20 +21,31 @@ class AuthRequestCommand extends BaseCommand {
             ->setDescription('Send an authentication request to the server')
             ->addOption('host', null, InputOption::VALUE_REQUIRED, 'Server host')
             ->addOption('port', null, InputOption::VALUE_OPTIONAL, 'Server port', AdAuth::DefaultPort)
-            ->addOption('tls', null, InputOption::VALUE_OPTIONAL, 'Use TLS?');
+            ->addOption('peer_name', null, InputOption::VALUE_REQUIRED, 'Peer name')
+            ->addOption('peer_fingerprint', null, InputOption::VALUE_REQUIRED, 'Peer fingerprint')
+            ->addOption('ca_file', null, InputOption::VALUE_OPTIONAL, 'Path to CA file');
     }
 
     public function execute(InputInterface $input, OutputInterface $output) {
         $host = $input->getOption('host');
         $port = $input->getOption('port') ?? AdAuth::DefaultPort;
+        $peerName = $input->getOption('peer_name');
+        $peerFingerprint = $input->getOption('peer_fingerprint');
+        $caFile = $input->getOption('ca_file');
 
         if($host === null) {
             throw new \InvalidArgumentException('Option "host" is missing');
         }
 
-        $useTls = $input->hasParameterOption('--tls');
+        if($peerName === null) {
+            throw new \InvalidArgumentException('Option "peer_name" is missing');
+        }
 
-        $stream = $useTls ? new TlsStream() : new UnencryptedStream();
+        if($peerFingerprint === null) {
+            throw new \InvalidArgumentException('Option "peer_fingerprint" is missing');
+        }
+
+        $stream = new TlsStream($caFile, $peerName, $peerFingerprint);
 
         $serializer = $this->getSerializer();
         $adAuth = new AdAuth($host, $stream, $serializer, $port);

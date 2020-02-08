@@ -5,11 +5,9 @@ namespace AdAuth;
 use AdAuth\Request\AbstractRequest;
 use AdAuth\Request\AuthenticateRequest;
 use AdAuth\Request\PingRequest;
-use AdAuth\Request\StatusRequest;
 use AdAuth\Response\AbstractResponse;
 use AdAuth\Response\AuthenticationResponse;
 use AdAuth\Response\PingResponse;
-use AdAuth\Response\StatusResponse;
 use AdAuth\Stream\StreamInterface;
 use JMS\Serializer\SerializerInterface;
 
@@ -47,17 +45,6 @@ class AdAuth implements AdAuthInterface {
      */
     public function authenticate(Credentials $credentials): AbstractResponse {
         return $this->request(new AuthenticateRequest($credentials->getUsername(), $credentials->getPassword()), AuthenticationResponse::class);
-    }
-
-    /**
-     * @param array $usernames
-     * @return StatusResponse
-     * @throws SocketReadException
-     * @throws SocketWriteException
-     * @throws SocketConnectException
-     */
-    public function status(array $usernames): AbstractResponse {
-        return $this->request(new StatusRequest($usernames), StatusResponse::class);
     }
 
     /**

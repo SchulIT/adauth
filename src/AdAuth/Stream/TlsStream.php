@@ -36,7 +36,7 @@ class TlsStream implements StreamInterface {
                 'crypto_method' => STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT,
                 'disable_compression' => true,
                 'peer_name' => $this->peerName,
-                'verify_peer' => $this->peerName !== null,
+                'verify_peer' => $this->peerName !== null && $this->caFile !== null,
                 'allow_self_signed' => true,
                 'cafile' => $this->caFile,
                 'peer_fingerprint' => $this->peerFingerprint,
@@ -45,7 +45,7 @@ class TlsStream implements StreamInterface {
         ];
 
         $context = stream_context_create($options);
-        $stream = @stream_socket_client('tls://' . $host . ':' . $port, $errno, $errstr, 1, STREAM_CLIENT_CONNECT, $context);
+        $stream = @stream_socket_client('tls://' . $host . ':' . $port, $errno, $errstr, 5, STREAM_CLIENT_CONNECT, $context);
 
         if(!is_resource($stream)) {
             throw new SocketConnectException('Error connecting using TLS: ' . $errstr . ' (code: ' . $errno . ')');

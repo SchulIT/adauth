@@ -5,7 +5,7 @@ namespace AdAuth\Request;
 use JMS\Serializer\Annotation as Serializer;
 
 class AuthenticateRequest extends AbstractRequest {
-    private const RequestName = 'auth';
+    private const RequestName = 'authenticate';
 
     /**
      * @Serializer\SerializedName("username")
