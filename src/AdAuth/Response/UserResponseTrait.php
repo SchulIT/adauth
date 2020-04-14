@@ -42,6 +42,12 @@ trait UserResponseTrait {
     private $email;
 
     /**
+     * @Serializer\SerializedName("guid")
+     * @Serializer\Type("string")
+     */
+    private $guid;
+
+    /**
      * @Serializer\SerializedName("unique_id")
      * @Serializer\Type("string")
      */
@@ -99,6 +105,13 @@ trait UserResponseTrait {
      */
     public function getEmail(): ?string {
         return $this->email;
+    }
+
+    /**
+     * @return string
+     */
+    public function getGuid(): string {
+        return $this->guid;
     }
 
     /**
