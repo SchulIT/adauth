@@ -12,6 +12,12 @@ trait UserResponseTrait {
     private $username;
 
     /**
+     * @Serializer\SerializedName("upn")
+     * @Serializer\Type("string")
+     */
+    private $userPrincipalName;
+
+    /**
      * @Serializer\SerializedName("firstname")
      * @Serializer\Type("string")
      */
@@ -70,6 +76,13 @@ trait UserResponseTrait {
      */
     public function getUsername(): string {
         return $this->username;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUserPrincipalName(): string {
+        return $this->userPrincipalName;
     }
 
     /**
