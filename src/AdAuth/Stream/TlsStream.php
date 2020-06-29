@@ -13,17 +13,6 @@ class TlsStream implements StreamInterface {
     public function __construct(string $caFile = null, string $peerName = null, string $peerFingerprint = null) {
         $this->peerName = $peerName;
         $this->peerFingerprint = $peerFingerprint;
-
-        if($caFile !== null) {
-            if (!file_exists($caFile)) {
-                throw new \InvalidArgumentException(sprintf('CA certificate file "%s" does not exist', $caFile));
-            }
-
-            if (!is_readable($caFile)) {
-                throw new \InvalidArgumentException(sprintf('CA certificate file "%s" is not readable', $caFile));
-            }
-        }
-
         $this->caFile = $caFile;
     }
 
@@ -31,6 +20,16 @@ class TlsStream implements StreamInterface {
      * @inheritDoc
      */
     public function getStream($host, $port) {
+        if($this->caFile !== null) {
+            if (!file_exists($this->caFile)) {
+                throw new \InvalidArgumentException(sprintf('CA certificate file "%s" does not exist', $this->caFile));
+            }
+
+            if (!is_readable($this->caFile)) {
+                throw new \InvalidArgumentException(sprintf('CA certificate file "%s" is not readable', $this->caFile));
+            }
+        }
+
         $options = [
             'ssl' => [
                 'crypto_method' => STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT,
