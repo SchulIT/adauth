@@ -2,7 +2,7 @@
     "name": "schulit/adauth",
     "version": "1.0.0",
     "type": "library",
-    "description": "Client library for AD Auth Server",
+    "description": "Client library for Active Directory Authentication Server",
     "license": "MIT",
     "authors": [
         {
@@ -20,8 +20,5 @@
         "psr-0": {
             "AdAuth\\": "./src"
         }
-    },
-    "require-dev": {
-        "symfony/console": "^4.4"
     }
 }
