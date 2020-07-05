@@ -6,7 +6,7 @@ aufgebaut werden.
 ## Installation
 
 ```
-$ composer require schoolit/adauth
+$ composer require schulit/adauth
 ```
 
 ## Benutzung
