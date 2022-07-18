@@ -1,6 +1,5 @@
 {
     "name": "schulit/adauth",
-    "version": "1.0.0",
     "type": "library",
     "description": "Client library for Active Directory Authentication Server",
     "license": "MIT",
