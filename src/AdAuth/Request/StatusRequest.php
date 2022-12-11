@@ -2,28 +2,37 @@
 
 namespace AdAuth\Request;
 
-use JMS\Serializer\Annotation as Serializer;
+use InvalidArgumentException;
+use JsonSerializable;
 
-class StatusRequest extends AbstractRequest {
+class StatusRequest extends AbstractRequest implements JsonSerializable {
     private const RequestName = 'status';
-
-    /**
-     * @Serializer\SerializedName("users")
-     * @Serializer\Type("array<string>")
-     * @var string[]
-     */
-    private $users = [ ];
 
     /**
      * @param string[] $users
      */
-    public function __construct(array $users) {
+    public function __construct(private readonly array $users) {
         parent::__construct(static::RequestName);
 
-        $this->users = $users;
+        foreach($this->users as $user) {
+            if(!is_string($user)) {
+                throw new InvalidArgumentException(
+                    sprintf('User "%s" is not of type string (%s given)', $user, gettype($user))
+                );
+            }
+        }
     }
 
     public function getUsers(): array {
         return $this->users;
+    }
+
+    public function jsonSerialize(): array {
+        return array_merge(
+            parent::jsonSerialize(),
+            [
+                'users' => $this->getUsers()
+            ]
+        );
     }
 }

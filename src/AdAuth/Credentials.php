@@ -3,19 +3,13 @@
 namespace AdAuth;
 
 class Credentials {
-    private $username;
-    private $password;
+    public function __construct(private readonly string $username, private readonly string $password) { }
 
-    public function __construct($username, $password) {
-        $this->username = $username;
-        $this->password = $password;
-    }
-
-    public function getUsername() {
+    public function getUsername(): string {
         return $this->username;
     }
 
-    public function getPassword() {
+    public function getPassword(): string {
         return $this->password;
     }
 }

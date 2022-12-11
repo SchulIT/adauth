@@ -2,32 +2,13 @@
 
 namespace AdAuth\Request;
 
-use JMS\Serializer\Annotation as Serializer;
+use JsonSerializable;
 
-class AuthenticateRequest extends AbstractRequest {
+class AuthenticateRequest extends AbstractRequest implements JsonSerializable {
     private const RequestName = 'authenticate';
 
-    /**
-     * @Serializer\SerializedName("username")
-     * @Serializer\Accessor(getter="getUsername")
-     * @Serializer\ReadOnly()
-     * @var string
-     */
-    private $username;
-
-    /**
-     * @Serializer\SerializedName("password")
-     * @Serializer\Accessor(getter="getPassword")
-     * @Serializer\ReadOnly()
-     * @var string
-     */
-    private $password;
-
-    public function __construct(string $username, string $password) {
+    public function __construct(private readonly string $username, private readonly string $password) {
         parent::__construct(static::RequestName);
-
-        $this->username = $username;
-        $this->password = $password;
     }
 
     public function getUsername(): string {
@@ -36,5 +17,15 @@ class AuthenticateRequest extends AbstractRequest {
 
     public function getPassword(): string {
         return $this->password;
+    }
+
+    public function jsonSerialize(): array {
+        return array_merge(
+            parent::jsonSerialize(),
+            [
+                'username' => $this->getUsername(),
+                'password' => $this->getPassword()
+            ]
+        );
     }
 }

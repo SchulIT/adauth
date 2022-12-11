@@ -2,4 +2,6 @@
 
 namespace AdAuth;
 
-abstract class SocketException extends \Exception { }
+use Exception;
+
+abstract class SocketException extends Exception { }

@@ -2,23 +2,19 @@
 
 namespace AdAuth\Request;
 
-use JMS\Serializer\Annotation as Serializer;
+use JsonSerializable;
 
-abstract class AbstractRequest {
+abstract class AbstractRequest implements JsonSerializable {
 
-    /**
-     * @Serializer\SerializedName("action")
-     * #@Serializer\Accessor(getter="getAction")
-     * @Serializer\ReadOnly()
-     * @var string
-     */
-    private $action;
-
-    public function __construct(string $action) {
-        $this->action = $action;
-    }
+    public function __construct(private readonly string $action) { }
 
     public function getAction(): string {
         return $this->action;
+    }
+
+    public function jsonSerialize(): array {
+        return [
+            'action' => $this->getAction()
+        ];
     }
 }

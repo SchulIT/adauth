@@ -3,18 +3,11 @@
 namespace AdAuth\Stream;
 
 use AdAuth\SocketConnectException;
+use InvalidArgumentException;
 
 class TlsStream implements StreamInterface {
 
-    private $caFile;
-    private $peerName;
-    private $peerFingerprint;
-
-    public function __construct(string $caFile = null, string $peerName = null, string $peerFingerprint = null) {
-        $this->peerName = $peerName;
-        $this->peerFingerprint = $peerFingerprint;
-        $this->caFile = $caFile;
-    }
+    public function __construct(private readonly ?string $caFile = null, private readonly ?string $peerName = null, private readonly ?string $peerFingerprint = null) { }
 
     /**
      * @inheritDoc
@@ -22,11 +15,11 @@ class TlsStream implements StreamInterface {
     public function getStream($host, $port) {
         if($this->caFile !== null) {
             if (!file_exists($this->caFile)) {
-                throw new \InvalidArgumentException(sprintf('CA certificate file "%s" does not exist', $this->caFile));
+                throw new InvalidArgumentException(sprintf('CA certificate file "%s" does not exist', $this->caFile));
             }
 
             if (!is_readable($this->caFile)) {
-                throw new \InvalidArgumentException(sprintf('CA certificate file "%s" is not readable', $this->caFile));
+                throw new InvalidArgumentException(sprintf('CA certificate file "%s" is not readable', $this->caFile));
             }
         }
 

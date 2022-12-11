@@ -4,83 +4,66 @@ namespace AdAuth;
 
 use AdAuth\Request\AbstractRequest;
 use AdAuth\Request\AuthenticateRequest;
+use AdAuth\Request\ChangePasswordRequest;
 use AdAuth\Request\PingRequest;
+use AdAuth\Request\ResetPasswordRequest;
 use AdAuth\Request\StatusRequest;
-use AdAuth\Response\AbstractResponse;
 use AdAuth\Response\AuthenticationResponse;
+use AdAuth\Response\AuthenticationSuccessResponse;
+use AdAuth\Response\PasswordResponse;
 use AdAuth\Response\PingResponse;
 use AdAuth\Response\StatusResponse;
 use AdAuth\Stream\StreamInterface;
-use JMS\Serializer\SerializerInterface;
 
 class AdAuth implements AdAuthInterface {
     const DefaultPort = 55117;
 
-    private $host = '';
-    private $port = null;
+    public function __construct(private readonly string $host, private readonly StreamInterface $stream, private readonly int $port = self::DefaultPort) {
 
-    private $stream;
-    private $serializer;
-
-    public function __construct($host, StreamInterface $stream, SerializerInterface $serializer, $port = self::DefaultPort) {
-        $this->host = $host;
-        $this->port = $port;
-
-        $this->stream = $stream;
-        $this->serializer = $serializer;
     }
 
-    public function getHost() {
+    public function getHost(): string {
         return $this->host;
     }
 
-    public function getPort() {
+    public function getPort(): int {
         return $this->port;
     }
 
-    /**
-     * @param Credentials $credentials
-     * @return AuthenticationResponse
-     * @throws SocketReadException
-     * @throws SocketWriteException
-     * @throws SocketConnectException
-     */
-    public function authenticate(Credentials $credentials): AbstractResponse {
-        return $this->request(new AuthenticateRequest($credentials->getUsername(), $credentials->getPassword()), AuthenticationResponse::class);
+    public function authenticate(Credentials $credentials): AuthenticationResponse {
+        $response = $this->request(new AuthenticateRequest($credentials->getUsername(), $credentials->getPassword()), AuthenticationSuccessResponse::class);
+        return AuthenticationResponse::fromJson($response);
     }
 
-    /**
-     * @return PingResponse
-     * @throws SocketReadException
-     * @throws SocketWriteException
-     * @throws SocketConnectException
-     */
-    public function ping(): AbstractResponse {
-        return $this->request(new PingRequest(), PingResponse::class);
+    public function changePassword(Credentials $oldCredentials, Credentials $newCredentials): PasswordResponse {
+        $response = $this->request(new ChangePasswordRequest($oldCredentials->getUsername(), $oldCredentials->getPassword(), $newCredentials->getPassword()));
+        return PasswordResponse::fromJson($response);
     }
 
-    /**
-     * @param string[] $users List of usernames to request the status of
-     * @return StatusResponse
-     * @throws SocketConnectException
-     * @throws SocketReadException
-     * @throws SocketWriteException
-     */
-    public function status(array $users): AbstractResponse {
-        return $this->request(new StatusRequest($users), StatusResponse::class);
+    public function resetPassword(Credentials $newCredentials, Credentials $adminCredentials): PasswordResponse {
+        $response = $this->request(new ResetPasswordRequest($newCredentials->getUsername(), $newCredentials->getPassword(), $adminCredentials->getUsername(), $adminCredentials->getPassword()));
+        return PasswordResponse::fromJson($response);
+    }
+
+    public function ping(): PingResponse {
+        $response = $this->request(new PingRequest());
+        return new PingResponse();
+    }
+
+    public function status(array $users): StatusResponse {
+        $response = $this->request(new StatusRequest($users));
+        return StatusResponse::fromJson($response);
     }
 
     /**
      * @param AbstractRequest $request
-     * @param $resultType
-     * @return AbstractResponse
+     * @return array The JSON response parsed as array
+     * @throws SocketConnectException
      * @throws SocketReadException
      * @throws SocketWriteException
-     * @throws SocketConnectException
      */
-    private function request(AbstractRequest $request, $resultType) {
-        $json = $this->serializer
-            ->serialize($request, 'json');
+    private function request(AbstractRequest $request): array {
+        $json = json_encode($request);
 
         $stream = $this->stream->getStream($this->getHost(), $this->getPort());
 
@@ -97,10 +80,9 @@ class AdAuth implements AdAuthInterface {
             $response .= fgets($stream);
         }
 
-        $result = $this->serializer
-            ->deserialize($response, $resultType, 'json');
+        $result = json_decode($response, true);
 
-        if($result === null) {
+        if(json_last_error() !== JSON_ERROR_NONE) {
             throw new SocketReadException();
         }
 
