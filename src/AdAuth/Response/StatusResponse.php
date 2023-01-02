@@ -5,11 +5,9 @@ namespace AdAuth\Response;
 class StatusResponse extends AbstractResponse {
 
     /**
-     * @param bool $isSuccess
      * @param UserStatusResponse[] $users
      */
-    public function __construct(bool $isSuccess, private readonly array $users) {
-        parent::__construct($isSuccess);
+    public function __construct(private readonly array $users) {
     }
 
     /**
@@ -30,7 +28,6 @@ class StatusResponse extends AbstractResponse {
         }
 
         return new StatusResponse(
-            $json['is_success'],
             $users
         );
     }

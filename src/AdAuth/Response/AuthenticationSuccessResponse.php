@@ -2,7 +2,9 @@
 
 namespace AdAuth\Response;
 
-class AuthenticationSuccessResponse extends AuthenticationResponse {
+use JsonSerializable;
+
+class AuthenticationSuccessResponse extends AuthenticationResponse implements JsonSerializable {
 
     use UserResponseTrait;
 
@@ -19,5 +21,20 @@ class AuthenticationSuccessResponse extends AuthenticationResponse {
         $this->guid = $guid;
         $this->ou = $ou;
         $this->groups = $groups;
+    }
+
+    public function jsonSerialize(): array {
+        return [
+            'username' => $this->username,
+            'user_principal_name' => $this->userPrincipalName,
+            'firstname' => $this->firstname,
+            'lastname' => $this->lastname,
+            'fullname' => $this->fullname,
+            'display_name' => $this->displayName,
+            'email' => $this->email,
+            'guid' => $this->guid,
+            'ou' => $this->ou,
+            'groups' => $this->groups
+        ];
     }
 }

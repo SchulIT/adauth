@@ -2,7 +2,9 @@
 
 namespace AdAuth\Response;
 
-abstract class PasswordResponse {
+use JsonSerializable;
+
+abstract class PasswordResponse implements JsonSerializable {
     public function __construct(private readonly ?string $result) { }
 
     public function getResult(): ?string {
@@ -15,5 +17,12 @@ abstract class PasswordResponse {
         }
 
         return new PasswordSuccessResponse($json['result']);
+    }
+
+
+    public function jsonSerialize(): array {
+        return [
+            'result' => $this->result
+        ];
     }
 }
