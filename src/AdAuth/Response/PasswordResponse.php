@@ -4,7 +4,7 @@ namespace AdAuth\Response;
 
 use JsonSerializable;
 
-abstract class PasswordResponse implements JsonSerializable {
+abstract class PasswordResponse extends AbstractResponse implements JsonSerializable {
     public function __construct(private readonly ?string $result) { }
 
     public function getResult(): ?string {
